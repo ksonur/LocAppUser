@@ -1,0 +1,6 @@
+<resources>
+    <string name="app_name">LocAppUser</string>
+    <string name="location"><u>Konum :</u></string>
+    <string name="mapTypeRadioButton">Normal Harita</string>
+    <string name="mapTypeRadioButton2">Kuş Bakışı Harita</string>
+</resources>
