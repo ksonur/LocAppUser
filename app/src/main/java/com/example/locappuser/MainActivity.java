@@ -8,6 +8,7 @@ import android.content.SharedPreferences.Editor;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
@@ -17,6 +18,7 @@ import com.github.nkzawa.emitter.Emitter;
 import com.github.nkzawa.socketio.client.IO;
 import com.github.nkzawa.socketio.client.Socket;
 
+import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -31,17 +33,17 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     SharedPreferences pref;
     Editor editor;
     public static Socket mSocket;
-    public static final String URL="http://10.150.25.158:9222";
-//    public static final String URL="http://192.168.43.237:9222";
+//    public static final String URL="http://10.150.24.25:9222";
+//    public static final String URL="http://192.168.2.30:9222";
+    public static final String URL="http://192.168.43.237:9222";
+
 
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-
         setComponents();
-
         socketHandle();
     }
 
@@ -50,7 +52,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             mSocket= IO.socket(URL);
             mSocket.on("incomingLocation",getLocation);
             mSocket.connect();
-
         } catch (URISyntaxException e) {
             e.printStackTrace();
         }
@@ -87,7 +88,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             final String password_=password.getText().toString();
             final Boolean isSuccess;
             new AsyncTask<Void,Void,Void>(){
-                String response =" ";
+                String response;
                 @Override
                 protected Void doInBackground(Void... voids) {
                     try {
@@ -97,19 +98,30 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 //                        Log.i("responseeee", " response "+ response);
                         } catch (IOException e) {
                             e.printStackTrace();
+                        } catch (JSONException e1){
+                            e1.printStackTrace();
                         }
                     return null;
                 }
 
                 @Override
                 protected void onPostExecute(Void aVoid) {
-                    if(response.equals("Success")){
+                    String responseMessage;
+                    try {
+                        JSONObject responseJSON=new JSONObject(response);
+                        responseMessage=responseJSON.getString("message");
+                        if(responseMessage.equals("Success")){
+                        Log.i("SUCCESS AUTHENTICATION","SUCCESS AUTHENTICATION");
                         Intent i=new Intent(MainActivity.this,SecondActivity.class);
                         startActivity(i);
+                        }
+                        else{
+                            Toast.makeText(getApplicationContext(),"Yanlış kullanıcı adı ve ya şifre",Toast.LENGTH_LONG).show();
+                        }
+                    } catch (JSONException e) {
+                        e.printStackTrace();
                     }
-                    else{
-                        Toast.makeText(getApplicationContext(),"Yanlış kullanıcı adı ve ya şifre",Toast.LENGTH_LONG).show();
-                    }
+//
                     super.onPostExecute(aVoid);
                 }
 

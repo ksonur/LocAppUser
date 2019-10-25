@@ -1,8 +1,13 @@
 package com.example.locappuser;
 
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import java.io.BufferedInputStream;
 import java.io.BufferedReader;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
 import java.net.HttpURLConnection;
@@ -14,12 +19,12 @@ public class Requests {
     public Requests() {
     }
 
-    public String makePostRequest(String url,String data) throws IOException {
+    public String makePostRequest(String url,String data) throws IOException, JSONException {
 
         URL url_=new URL(url);
         HttpURLConnection urlConnection= (HttpURLConnection) url_.openConnection();
-        String isSuccess="no success";
-        StringBuffer response=new StringBuffer();
+        String result=null;
+//        StringBuffer response=new StringBuffer();
 
         urlConnection.setRequestProperty("Content-Type","application/json; charset=UTF-8");
         urlConnection.setRequestMethod("POST");
@@ -32,15 +37,26 @@ public class Requests {
         writer.write(data);
         writer.close();
 
-        BufferedReader br=new BufferedReader(new InputStreamReader(urlConnection.getInputStream()));
-
-        while ((isSuccess=br.readLine())!=null){
-            response.append(isSuccess);
+        InputStream in = new BufferedInputStream(urlConnection.getInputStream());
+        StringBuilder answer = new StringBuilder();
+        InputStreamReader isr=new InputStreamReader(in);
+        BufferedReader br=new BufferedReader(isr);
+        while ((result = br.readLine()) != null) {
+            answer.append(result);
         }
-        br.close();
 
+//        BufferedReader br=new BufferedReader(new InputStreamReader(urlConnection.getInputStream()));
+//
+//        while ((isSuccess=br.readLine())!=null){
+//            response.append(isSuccess);
+//        }
+//        br.close();
+
+        isr.close();
+        br.close();
+        in.close();
         urlConnection.disconnect();
-        return response.toString();
+        return answer.toString();
     }
 
 }
