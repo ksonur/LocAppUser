@@ -58,16 +58,20 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content">
         <RadioGroup
+            android:id="@+id/mapTypeRBG"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="horizontal"
             android:gravity="center">
             <RadioButton
+                android:id="@+id/normalMapRB"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="@string/mapTypeRadioButton"
-                android:fontFamily="@font/champagne_limousines"/>
+                android:fontFamily="@font/champagne_limousines"
+                android:checked="true"/>
             <RadioButton
+                android:id="@+id/urbanTypeMapRB"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="@string/mapTypeRadioButton2"
@@ -84,7 +88,7 @@
             android:name="com.google.android.gms.maps.SupportMapFragment"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:layout_marginTop="@dimen/map_margin_top"
-            tools:context=".MapsActivity" />
+            tools:context=".MapsActivity"
+            map:cameraZoom="18"/>
     </LinearLayout>
 </androidx.appcompat.widget.LinearLayoutCompat>

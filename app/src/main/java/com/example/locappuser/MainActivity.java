@@ -35,7 +35,8 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     public static Socket mSocket;
 //    public static final String URL="http://10.150.24.25:9222";
 //    public static final String URL="http://192.168.2.30:9222";
-    public static final String URL="http://192.168.43.237:9222";
+//    public static final String URL="http://192.168.43.237:9222";
+    public static final String URL="http://192.168.1.109:9222";
 
 
 
@@ -76,8 +77,8 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         pref=getApplicationContext().getSharedPreferences(PreferenceManager.getDefaultSharedPreferencesName(this),0);
         editor=pref.edit();
         loginButton=findViewById(R.id.btn_login);
-        username=(EditText)findViewById(R.id.input_email);
-        password=(EditText)findViewById(R.id.input_password);
+        username=findViewById(R.id.input_email);
+        password=findViewById(R.id.input_password);
         loginButton.setOnClickListener(this);
     }
 
@@ -106,17 +107,40 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
                 @Override
                 protected void onPostExecute(Void aVoid) {
-                    String responseMessage;
+                    String responseMessage,longAndLat,longtitude,lattitude;
+//                    String token;
                     try {
-                        JSONObject responseJSON=new JSONObject(response);
-                        responseMessage=responseJSON.getString("message");
-                        if(responseMessage.equals("Success")){
-                        Log.i("SUCCESS AUTHENTICATION","SUCCESS AUTHENTICATION");
-                        Intent i=new Intent(MainActivity.this,SecondActivity.class);
-                        startActivity(i);
+                        if(response==null){
+                            Log.i("LOCAPP DEBUG","Empty JSON response when login");
                         }
                         else{
-                            Toast.makeText(getApplicationContext(),"Yanlış kullanıcı adı ve ya şifre",Toast.LENGTH_LONG).show();
+                            JSONObject responseJSON=new JSONObject(response);
+                            responseMessage=responseJSON.getString("message");
+                            if(responseMessage.equals("Success")){
+                                longAndLat=responseJSON.getString("longandlat");
+                                JSONObject longAndLatJson= new JSONObject(longAndLat);
+                                lattitude=longAndLatJson.getString("lattitude");
+                                longtitude=longAndLatJson.getString("longtitude");
+                                editor.clear();
+                                editor.putString("longtitude",longtitude);
+                                editor.putString("lattitude",lattitude);
+                                editor.commit();
+                            }
+                            else{
+                                Log.i("LOGIN INFO",responseMessage);
+                            }
+
+//                        token=responseJSON.getString("token");
+//                        editor.putString("token",(String)token);
+//                        editor.commit();
+                            if(responseMessage.equals("Success")){
+                                Log.i("SUCCESS AUTHENTICATION","SUCCESS AUTHENTICATION");
+                                Intent i=new Intent(MainActivity.this,SecondActivity.class);
+                                startActivity(i);
+                            }
+                            else if(responseMessage.equals("Unsuccess")){
+                                Toast.makeText(getApplicationContext(),"Yanlış kullanıcı adı ve ya şifre",Toast.LENGTH_LONG).show();
+                            }
                         }
                     } catch (JSONException e) {
                         e.printStackTrace();

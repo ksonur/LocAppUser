@@ -5,6 +5,8 @@ import androidx.appcompat.app.AppCompatActivity;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
+import android.util.Log;
+import android.widget.RadioGroup;
 import android.widget.TextView;
 
 import com.google.android.gms.maps.CameraUpdateFactory;
@@ -19,13 +21,40 @@ public class SecondActivity extends AppCompatActivity implements OnMapReadyCallb
     SharedPreferences pref;
     TextView locationTextView;
     private GoogleMap mMap;
+    private RadioGroup mapTypeRBG;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_second);
         setComponents();
+        setLocationLabel();
         setMap();
+        setMapTypeRadioButtonGroup();
+
+    }
+
+    private void setMapTypeRadioButtonGroup() {
+        mapTypeRBG.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(RadioGroup radioGroup, int i) {
+                if(i==R.id.normalMapRB){
+                    mMap.setMapType(GoogleMap.MAP_TYPE_NORMAL);
+                }
+                else if(i==R.id.urbanTypeMapRB){
+                    mMap.setMapType(GoogleMap.MAP_TYPE_SATELLITE);
+                }
+            }
+        });
+    }
+
+    private void setLocationLabel() {
+        String longtitude,lattitude;
+        if((longtitude=pref.getString("lattitude",null))!=null && (lattitude=pref.getString("longtitude",null))!=null){
+            locationTextView.setText(longtitude +" "+ lattitude);
+        }
+        else
+            Log.i("DEBUG","An error occurred while writing the location. Shared Preferences are empty.");
     }
 
     private void setMap() {
@@ -37,17 +66,16 @@ public class SecondActivity extends AppCompatActivity implements OnMapReadyCallb
     private void setComponents() {
         pref= PreferenceManager.getDefaultSharedPreferences(this);
         locationTextView=findViewById(R.id.locationTextView);
-        String location_;
-        if((location_=pref.getString("loc",null))!=null)
-            locationTextView.setText(location_);
+        mapTypeRBG=findViewById(R.id.mapTypeRBG);
     }
+
 
     @Override
     public void onMapReady(GoogleMap googleMap) {
         mMap = googleMap;
         // Add a marker in Sydney and move the camera
-        LatLng sydney = new LatLng(39.891698, 32.849918);
-        mMap.addMarker(new MarkerOptions().position(sydney).title("Marker in Sydney"));
+        LatLng sydney = new LatLng(Double.parseDouble(pref.getString("longtitude",null)),Double.parseDouble(pref.getString("lattitude",null)) );
+        mMap.addMarker(new MarkerOptions().position(sydney).title("Öğrenci Burada"));
         mMap.moveCamera(CameraUpdateFactory.newLatLng(sydney));
     }
 }
