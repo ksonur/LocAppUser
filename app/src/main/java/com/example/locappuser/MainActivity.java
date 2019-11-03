@@ -37,6 +37,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 //    public static final String URL="http://192.168.2.30:9222";
 //    public static final String URL="http://192.168.43.237:9222";
     public static final String URL="http://192.168.1.109:9222";
+    public static String studentId;
 
 
 
@@ -64,9 +65,17 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             runOnUiThread(new Runnable() {
                 @Override
                 public void run() {
-                        editor.clear();
-                        editor.putString("loc",(String)args[0]);
-                        editor.commit();
+//                    if(((String)args[0]).equals(MainActivity))
+                        if(studentId!=null)
+                        {
+                            if(studentId.equals((String)args[2])){
+                                editor.clear();
+                                editor.putString("lattitude",(String)args[0]);
+                                editor.putString("longtitude",(String)args[1]);
+                                editor.commit();
+                            }
+                        }
+
                 }
             });
         }
@@ -107,7 +116,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
                 @Override
                 protected void onPostExecute(Void aVoid) {
-                    String responseMessage,longAndLat,longtitude,lattitude;
+                    String responseMessage,longAndLatAndStudentid,longtitude,lattitude,studentid;
 //                    String token;
                     try {
                         if(response==null){
@@ -117,13 +126,15 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                             JSONObject responseJSON=new JSONObject(response);
                             responseMessage=responseJSON.getString("message");
                             if(responseMessage.equals("Success")){
-                                longAndLat=responseJSON.getString("longandlat");
-                                JSONObject longAndLatJson= new JSONObject(longAndLat);
-                                lattitude=longAndLatJson.getString("lattitude");
-                                longtitude=longAndLatJson.getString("longtitude");
+                                longAndLatAndStudentid=responseJSON.getString("longandlatandstudentid");
+                                JSONObject LLSJson= new JSONObject(longAndLatAndStudentid);
+                                lattitude=LLSJson.getString("lattitude");
+                                longtitude=LLSJson.getString("longtitude");
+                                studentid=LLSJson.getString("studentId");
                                 editor.clear();
                                 editor.putString("longtitude",longtitude);
                                 editor.putString("lattitude",lattitude);
+                                studentId=studentid;
                                 editor.commit();
                             }
                             else{
